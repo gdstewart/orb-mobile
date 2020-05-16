@@ -6,27 +6,20 @@ import BackgroundFetch from "react-native-background-fetch";
 import NetInfo from "@react-native-community/netinfo";
 import RNExitApp from "react-native-exit-app";
 import PlaybackStore from "./src/stores/Playback";
-import stationsData from "./res/data/stations-data";
 import getCurrentShowInfo from "./src/utils/show-fetcher";
 
 export default class App extends Component {
-	_startPlayer = async (station) => {
+	_restartPlayback = async () => {
 		AppStore.mediaPlayerClosed = false;
 		AppStore.stationError = false;
 
-		PlaybackStore.structure.title = await getCurrentShowInfo(stationsData[station].name);
-		PlaybackStore.structure.id = stationsData[station].name;
-		PlaybackStore.structure.url = stationsData[station].streamUrl;
-		PlaybackStore.structure.artist = stationsData[station].name;
-		PlaybackStore.structure.artwork = stationsData[station].image;
-		PlaybackStore.structure.album = stationsData[station].websiteUrl;
-		PlaybackStore.structure.description = stationsData[station].description;
-
 		this._setRepeatSpacer();
 
-		if (PlaybackStore.structure.title !== "Show not found") {
+		if (PlaybackStore.structure.title !== "Offline") {
 			await TrackPlayer.add(PlaybackStore.structure);
 			await TrackPlayer.play().then(PlaybackStore.stationLoaded = true);
+		} else {
+			this._stationError();
 		}
 	}
 
@@ -49,11 +42,12 @@ export default class App extends Component {
 			NetInfo.fetch().then(async (state) => {
 				if (state.isConnected) {
 					if (typeof PlaybackStore.structure.id !== "undefined") {
-						let title = await getCurrentShowInfo(PlaybackStore.structure.id);
-						if (PlaybackStore.structure.title !== title) {
+						let show = await getCurrentShowInfo(PlaybackStore.structure.id);
+						if (PlaybackStore.structure.title !== show.title) {
+							PlaybackStore.structure.title = show.title;
 							PlaybackStore.stationLoaded = false;
 							await TrackPlayer.reset();
-							this._startPlayer(PlaybackStore.structure.id);
+							this._restartPlayback();
 						}
 					}
 				}

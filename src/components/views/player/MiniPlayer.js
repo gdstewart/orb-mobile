@@ -8,13 +8,14 @@ import TextTicker from "react-native-text-ticker";
 import * as Animatable from "react-native-animatable";
 import AwesomeAlert from "react-native-awesome-alert";
 import NetInfo from "@react-native-community/netinfo";
+import Spinner from "react-native-loading-spinner-overlay";
 import { ScaledSheet, scale } from "react-native-size-matters";
-import PlayerStore from "../../../stores/Player";
+import PlaybackStore from "../../../stores/Playback";
 import StationStore from "../../../stores/Station";
-import AppData from "../../../data/AppData";
-import StationsData from "../../../data/StationsData";
-import alertStyles from "../../../theme/AlertStyles";
-import getCurrentShowName from "../../../utils/ShowFetcher";
+import AppStore from "../../../stores/App";
+import AppData from "../../../../res/data/app-data";
+import styles from "../../../theme/styles";
+import getCurrentShowInfo from "../../../utils/show-fetcher";
 
 @observer
 class MiniPlayer extends Component {
@@ -23,22 +24,16 @@ class MiniPlayer extends Component {
 		this.alertRef = React.createRef();
 	}
 
-	_startPlayer = async (station) => {
-		PlayerStore.mediaPlayerClosed = false;
-		PlayerStore.stationError = false;
-		StationStore.structure.title = await getCurrentShowName(StationsData[station].name);
-		StationStore.structure.id = StationsData[station].name;
-		StationStore.structure.url = StationsData[station].streamUrl;
-		StationStore.structure.artist = StationsData[station].name;
-		StationStore.structure.artwork = StationsData[station].image;
-		StationStore.structure.album = StationsData[station].websiteUrl;
-		StationStore.structure.description = StationsData[station].description;
+	_restartPlayback = async () => {
+		AppStore.mediaPlayerClosed = false;
+		AppStore.stationError = false;
 
+		console.log(PlaybackStore.structure.id);
 		this._setRepeatSpacer();
 
-		if (StationStore.structure.title !== "Show not found") {
-			await TrackPlayer.add(StationStore.structure);
-			await TrackPlayer.play().then(PlayerStore.stationLoaded = true);
+		if (PlaybackStore.structure.title !== "Offline") {
+			await TrackPlayer.add(PlaybackStore.structure);
+			await TrackPlayer.play().then(PlaybackStore.stationLoaded = true);
 		} else {
 			this._stationError();
 		}
@@ -47,49 +42,54 @@ class MiniPlayer extends Component {
 	_networkError = async () => {
 		this.alertRef.alert(
 			"Connection failed",
-			<View style={alertStyles.alertBodyTextView}>
-				<Text style={alertStyles.alertBodyText}>Please make sure you are connected to the internet and try again.</Text>
+			<View style={styles.alertBodyTextView}>
+				<Text style={styles.alertBodyText}>Please make sure you are connected to the internet and try again.</Text>
 			</View>,
-			[{ text: "OK", onPress: () => { PlayerStore.mediaPlayerClosed = true; } }]
+			[{ text: "OK", onPress: () => { AppStore.mediaPlayerClosed = true; } }]
 		)
-		StationStore.structure.title = "Connection failed";
+		PlaybackStore.structure.title = "Connection failed";
 		await TrackPlayer.stop();
-		PlayerStore.networkError = true;
+		AppStore.networkError = true;
 	}
 
 	_stationError = async () => {
 		this.alertRef.alert(
 			"Station offline",
-			<View style={alertStyles.alertBodyTextView}>
-				<Text style={alertStyles.alertBodyText}>Station is not airing or is inaccessible. Try again later.</Text>
+			<View style={styles.alertBodyTextView}>
+				<Text style={styles.alertBodyText}>Station is not airing or is inaccessible. Try again later.</Text>
 			</View>,
 			[{ text: "OK", onPress: () => { } }]
 		)
-		StationStore.structure.title = "Station offline";
+		PlaybackStore.structure.title = "Station offline";
 		await TrackPlayer.stop();
-		PlayerStore.mediaPlayerClosed = true;
-		PlayerStore.stationError = true;
+		AppStore.mediaPlayerClosed = true;
+		AppStore.stationError = true;
 	}
 
 	_setRepeatSpacer() {
-		let s = StationStore.structure.title + "";
-		if (s.length >= 25 || s === s.toUpperCase() && s.length >= 20) PlayerStore.repeatSpacer = 50;
-		else PlayerStore.repeatSpacer = 250 - s.length;
+		let s = PlaybackStore.structure.title + "";
+		if (s.length >= 25 || s === s.toUpperCase() && s.length >= 20) PlaybackStore.repeatSpacer = 50;
+		else PlaybackStore.repeatSpacer = 250 - s.length;
 	}
 
 	_togglePlayback = async () => {
 		NetInfo.fetch().then(async (state) => {
 			if (state.isConnected) {
-				if (PlayerStore.playbackState !== TrackPlayer.STATE_BUFFERING && PlayerStore.stationLoaded) {
-					if (PlayerStore.playbackState === TrackPlayer.STATE_PAUSED ||
-						PlayerStore.playbackState === TrackPlayer.STATE_NONE) {
-						if (PlayerStore.mediaPlayerClosed) PlayerStore.mediaPlayerClosed = false;
+				if (PlaybackStore.playbackState !== TrackPlayer.STATE_BUFFERING && PlaybackStore.stationLoaded) {
+					if (PlaybackStore.playbackState === TrackPlayer.STATE_PAUSED ||
+						PlaybackStore.playbackState === TrackPlayer.STATE_NONE) {
+						let show = await getCurrentShowInfo(PlaybackStore.structure.id);
+						if (PlaybackStore.structure.title !== show.title) {
+							PlaybackStore.structure.title = show.title;
+							PlaybackStore.stationLoaded = false;
+						}
+						if (AppStore.mediaPlayerClosed) AppStore.mediaPlayerClosed = false;
 						await TrackPlayer.reset();
-						await this._startPlayer(StationStore.structure.id);
+						await this._restartPlayback();
 					} else {
 						await TrackPlayer.pause();
 					}
-					PlayerStore.networkError = false;
+					AppStore.networkError = false;
 				}
 			} else {
 				await this._networkError();
@@ -98,56 +98,64 @@ class MiniPlayer extends Component {
 	}
 
 	componentWillUnmount() {
-		PlayerStore.networkError = false;
-		PlayerStore.stationError = false;
+		AppStore.networkError = false;
+		AppStore.stationError = false;
 	}
 
 	render() {
-		if (!PlayerStore.mediaPlayerClosed) {
-			if (PlayerStore.stationLoaded) {
+		if (!AppStore.mediaPlayerClosed) {
+			if (PlaybackStore.stationLoaded) {
 				return (
-					<View style={{ backgroundColor: "#fff" }}>
+					<View style={{ backgroundColor: "#FFF" }}>
 						<AwesomeAlert
 							ref={ref => this.alertRef = ref}
 							styles={{
-								modalContainer: alertStyles.alertContainer,
-								modalView: alertStyles.alertView,
-								titleText: alertStyles.alertTitleText,
-								buttonContainer: alertStyles.alertButtonContainer,
-								buttonText: alertStyles.alertButtonText
+								modalContainer: styles.alertContainer,
+								modalView: styles.alertView,
+								titleText: styles.alertTitleText,
+								buttonContainer: styles.alertButtonContainer,
+								buttonText: styles.alertButtonText
 							}}
 							modalProps={{
 								transparent: true,
 								animationType: "fade"
 							}}
 						/>
+						<Spinner
+							visible={AppStore.loading}
+							overlayColor="rgba(0, 0, 0, 0.5)"
+						/>
 						<TouchableOpacity
 							style={styles.miniPlayer}
 							activeOpacity={0.8}
-							onPress={() =>
-								this.props.navigation.navigate("Modal", { name: StationStore.structure.id })}>
+							onPress={() => {
+								AppStore.loading = true;
+								setTimeout(() => {
+									this.props.navigation.navigate("StationInfo", { name: PlaybackStore.structure.id });
+								}, 100);
+							}}>
 							<View style={{ flex: 0.2 }}>
-								<Image source={StationStore.structure.artwork} style={styles.miniImage} />
+								<Image source={{ uri: PlaybackStore.structure.artwork }} style={[styles.miniPlayerImage, styles.whiteBorder]} />
 							</View>
 							<View style={{ flex: 0.6 }}>
 								<TextTicker
-									style={styles.tickerText}
+									style={styles.miniPlayerTickerText}
 									duration={20000}
 									loop
 									bounce={false}
-									repeatSpacer={PlayerStore.repeatSpacer}
+									repeatSpacer={PlaybackStore.repeatSpacer}
 									marqueeDelay={2000}
 									easing={Easing.inOut(Easing.ease)}>
-									{StationStore.structure.title}
+									{PlaybackStore.structure.title}
 								</TextTicker>
-								<Text style={styles.stationText}>
-									{StationStore.structure.id}
+								<Text style={styles.miniPlayerStationText}>
+									{PlaybackStore.structure.id}
 								</Text>
 							</View>
 							<View style={{ flex: 0.2 }}>
 								<TouchableOpacity
 									activeOpacity={0.6}
-									style={styles.miniStartStopButton}
+									style={styles.miniPlayerStartStopButton}
 									onPress={this._togglePlayback}>
 									<MiniStartStopIcon />
 								</TouchableOpacity>
@@ -161,11 +169,11 @@ class MiniPlayer extends Component {
 						<AwesomeAlert
 							ref={ref => this.alertRef = ref}
 							styles={{
-								modalContainer: alertStyles.alertContainer,
-								modalView: alertStyles.alertView,
-								titleText: alertStyles.alertTitleText,
-								buttonContainer: alertStyles.alertButtonContainer,
-								buttonText: alertStyles.alertButtonText
+								modalContainer: styles.alertContainer,
+								modalView: styles.alertView,
+								titleText: styles.alertTitleText,
+								buttonContainer: styles.alertButtonContainer,
+								buttonText: styles.alertButtonText
 							}}
 							modalProps={{
 								transparent: true,
@@ -174,13 +182,13 @@ class MiniPlayer extends Component {
 						/>
 						<View style={styles.miniPlayer}>
 							<View style={{ flex: 0.2 }}>
-								<Image source={AppData.logo} style={styles.miniImage} />
+								<Image source={AppData.logo} style={styles.miniPlayerImage} />
 							</View>
 							<View style={{ flex: 0.6 }}>
 								<LoadingField />
 							</View>
 							<View style={{ flex: 0.2 }}>
-								<View style={styles.miniStartStopButton}>
+								<View style={styles.miniPlayerStartStopButton}>
 									<MiniStartStopIcon />
 								</View>
 							</View>
@@ -196,7 +204,7 @@ class MiniPlayer extends Component {
 class LoadingField extends Component {
 	render() {
 		return <Animatable.Text
-			style={styles.loadingText}
+			style={styles.miniPlayerLoadingText}
 			animation="fadeIn"
 			iterationCount="infinite"
 			direction="alternate">
@@ -208,63 +216,18 @@ class LoadingField extends Component {
 @observer
 class MiniStartStopIcon extends Component {
 	render() {
-		if (PlayerStore.stationLoaded) {
-			if (PlayerStore.playbackState === TrackPlayer.STATE_PLAYING)
-				return <Icon name="stop-circle-outline" type="MaterialCommunityIcons" style={styles.miniStartStopIcon} />;
-			else if (PlayerStore.playbackState === TrackPlayer.STATE_PAUSED || PlayerStore.networkError)
-				return <Icon name="play-circle-outline" type="MaterialCommunityIcons" style={styles.miniStartStopIcon} />;
+		if (PlaybackStore.stationLoaded) {
+			if (PlaybackStore.playbackState === TrackPlayer.STATE_PLAYING)
+				return <Icon name="stop-circle-outline" type="MaterialCommunityIcons" style={styles.miniPlayerStartStopIcon} />;
+			else if (PlaybackStore.playbackState === TrackPlayer.STATE_PAUSED || AppStore.networkError)
+				return <Icon name="play-circle-outline" type="MaterialCommunityIcons" style={styles.miniPlayerStartStopIcon} />;
 			else
-				return <ActivityIndicator animating={true} size="large" color="#fff" style={styles.miniActivityIcon} />;
+				return <ActivityIndicator animating={true} size="large" color="#fff" style={styles.miniPlayerActivityIcon} />;
 		} else {
-			return <ActivityIndicator animating={true} size="large" color="#fff" style={styles.miniActivityIcon} />;
+			return <ActivityIndicator animating={true} size="large" color="#fff" style={styles.miniPlayerActivityIcon} />;
 		}
 
 	}
 }
-
-const styles = ScaledSheet.create({
-	miniPlayer: {
-		flexDirection: "row",
-		alignItems: "center",
-		justifyContent: "center",
-		height: "70@vs",
-		backgroundColor: "#000",
-		borderColor: "#FFF",
-		borderTopWidth: Math.ceil(scale(1.5) / 2) * 2
-	},
-	miniImage: {
-		height: "50@s",
-		width: "50@s",
-		alignSelf: "center"
-	},
-	tickerText: {
-		fontFamily: "Proxima_Nova",
-		fontSize: "14@s",
-		fontWeight: "bold",
-		color: "#fff"
-	},
-	loadingText: {
-		fontFamily: "Proxima_Nova",
-		fontSize: "22@s",
-		fontWeight: "bold",
-		color: "#fff"
-	},
-	stationText: {
-		fontSize: "12@s"
-	},
-	miniStartStopButton: {
-		alignSelf: "center"
-	},
-	miniStartStopIcon: {
-		color: "#fff",
-		fontSize: "52@s",
-		top: -1
-	},
-	miniActivityIcon: {
-		alignSelf: "center",
-		scaleX: "1.45@s",
-		scaleY: "1.45@s"
-	}
-});
 
 export default withNavigation(MiniPlayer);

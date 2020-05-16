@@ -11,8 +11,8 @@ import SchedulesView from "./views/schedules/SchedulesView";
 import SavedView from "./views/saved/SavedView";
 import MiscView from "./views/misc/MiscView";
 import PlayerModal from "./views/player/PlayerModal";
-import MiniPlayer from "./views/player/MiniPlayer";
 */
+import MiniPlayer from "./views/player/MiniPlayer";
 import styles from "../theme/styles";
 
 const TabNavigator = createMaterialTopTabNavigator({
@@ -30,9 +30,7 @@ const TabNavigator = createMaterialTopTabNavigator({
             return (
                 <StyleProvider style={getTheme()}>
                     <View>
-                        {/*
                         <MiniPlayer />
-                        */}
                         <Footer>
                             <FooterTab>
                                 <Button active={props.navigation.state.index === 0}>

@@ -1,5 +1,6 @@
 import TrackPlayer from "react-native-track-player";
 import PlaybackStore from "./src/stores/Playback";
+import AppStore from "./src/stores/App";
 
 module.exports = async function () {
 
@@ -14,7 +15,7 @@ module.exports = async function () {
 
     TrackPlayer.addEventListener("remote-stop", () => {
         TrackPlayer.stop();
-        PlaybackStore.mediaPlayerClosed = true;
+        AppStore.mediaPlayerClosed = true;
     })
 
 };

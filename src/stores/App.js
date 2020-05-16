@@ -3,7 +3,6 @@ import { Dimensions } from "react-native";
 
 class App {
     @observable loading = false;
-    @observable showPopUp = false;
     @observable stationsLoaded = false;
     @observable mediaPlayerClosed = true;
     @observable stationError = false;

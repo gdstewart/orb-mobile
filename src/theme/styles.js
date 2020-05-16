@@ -6,6 +6,13 @@ export default styles = ScaledSheet.create({
         borderColor: "#FFF",
         borderWidth: 2
     },
+    greyBorder: {
+        borderColor: "#666",
+        borderWidth: 2
+    },
+    bold: {
+        fontWeight: "bold"
+    },
     disabled: {
         opacity: 0.4
     },
@@ -60,28 +67,15 @@ export default styles = ScaledSheet.create({
         height: "80@vs",
         width: "80@vs"
     },
-    stationsListItemLogoPlayIcon: {
-        opacity: 0,
-        backgroundColor: "rgba(0, 0, 0, 0.6)",
-        position: "absolute",
-        marginTop: -2,
-        marginLeft: -2,
-        padding: "10@s",
-        height: "30@vs",
-        width: "30@vs",
-        color: "#FFF"
-    },
     stationsListItemLogoStopIcon: {
-        opacity: 0,
+        zIndex: 1,
+        opacity: 1,
         backgroundColor: "rgba(0, 0, 0, 0.6)",
         position: "absolute",
-        marginTop: -2,
-        marginLeft: -2,
-        padding: "10@s",
-        height: "30@vs",
-        width: "30@vs",
-        color: "#FFF",
-        opacity: 1
+        height: "80@vs",
+        width: "80@vs",
+        fontSize: "80@vs",
+        color: "#FFF"
     },
     stationsListItemBody: {
         minWidth: 0,
@@ -98,6 +92,7 @@ export default styles = ScaledSheet.create({
         fontFamily: "Authentic_Sans",
         fontSize: "16@s",
         color: "#FFF",
+        fontWeight: "bold",
         width: AppStore.screen.width - AppStore.screen.width / 2.8
     },
     stationsListItemStationName: {
@@ -123,14 +118,15 @@ export default styles = ScaledSheet.create({
     stationInfoShowTitle: {
         marginTop: "10@s",
         fontFamily: "Authentic_Sans",
-        fontSize: "18@s",
+        fontSize: "17@s",
         color: "#FFF"
     },
     stationInfoDescription: {
         marginTop: "10@s",
         fontFamily: "Authentic_Sans",
         fontSize: "14@s",
-        color: "#FFF"
+        color: "#FFF",
+        paddingBottom: "30@s"
     },
     tabButton: {
         alignItems: "center",
@@ -380,5 +376,47 @@ export default styles = ScaledSheet.create({
         backgroundColor: "transparent",
         color: "#fff",
         fontSize: "36@s"
+    },
+    miniPlayer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "70@vs",
+        backgroundColor: "#000",
+        borderColor: "#FFF",
+        borderTopWidth: Math.ceil(scale(1.5) / 2) * 2
+    },
+    miniPlayerImage: {
+        height: "50@s",
+        width: "50@s",
+        alignSelf: "center"
+    },
+    miniPlayerTickerText: {
+        fontFamily: "Authentic_Sans",
+        fontSize: "14@s",
+        fontWeight: "bold",
+        color: "#fff"
+    },
+    miniPlayerLoadingText: {
+        fontFamily: "Authentic_Sans",
+        fontSize: "22@s",
+        fontWeight: "bold",
+        color: "#fff"
+    },
+    miniPlayerStationText: {
+        fontSize: "12@s"
+    },
+    miniPlayerStartStopButton: {
+        alignSelf: "center"
+    },
+    miniPlayerStartStopIcon: {
+        color: "#fff",
+        fontSize: "52@s",
+        top: -1
+    },
+    miniPlayerActivityIcon: {
+        alignSelf: "center",
+        scaleX: "1.45@s",
+        scaleY: "1.45@s"
     }
 });
