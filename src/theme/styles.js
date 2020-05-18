@@ -163,6 +163,29 @@ export default styles = ScaledSheet.create({
         borderColor: "#333333",
         flexDirection: "row"
     },
+    aboutInfo: {
+        padding: "10@s"
+    },
+    aboutInfoHeader: {
+        fontSize: "17@s",
+        marginBottom: "10@s",
+        fontWeight: "bold"
+    },
+    aboutInfoBlurb: {
+        fontSize: "14@s",
+        marginBottom: "5@s"
+    },
+    aboutInfoImage: {
+        marginTop: "10@s",
+        flex: 1,
+        aspectRatio: 1.44,
+        height: undefined,
+        width: "100%",
+        resizeMode: "contain"
+    },
+    aboutInfoImageCredits: {
+        fontSize: "8@s"
+    },
     actionSheetContainer: {
         width: AppStore.screen.width,
         borderWidth: Math.ceil(scale(1.5) / 2) * 2,
@@ -310,6 +333,7 @@ export default styles = ScaledSheet.create({
         borderBottomWidth: Math.ceil(scale(1.5) / 2) * 2
     },
     dropdownListItemText: {
+        fontSize: "14@s",
         flex: 4,
         fontFamily: "Authentic_Sans",
         color: "#fff"

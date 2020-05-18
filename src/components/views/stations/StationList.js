@@ -213,7 +213,7 @@ class StationList extends Component {
                                     && (PlaybackStore.playbackState !== TrackPlayer.STATE_NONE && PlaybackStore.playbackState !== TrackPlayer.STATE_PAUSED)
                                     ? <Icon name="stop" type="MaterialCommunityIcons" style={styles.stationsListItemLogoStopIcon} />
                                     : null}
-                                <Image source={{ uri: station.image }} style={[styles.stationsListItemLogoImage, styles.whiteBorder]} />
+                                <Image source={station.image} style={[styles.stationsListItemLogoImage, styles.whiteBorder]} />
                             </TouchableOpacity>
                             {!StationStore.shows[station.name].loading ?
                                 <View style={styles.stationsListItemBody}>
@@ -241,7 +241,7 @@ class StationList extends Component {
                                                 if (PlaybackStore.structure.id === "NTS 2" && (PlaybackStore.playbackState === TrackPlayer.STATE_PLAYING || PlaybackStore.playbackState === TrackPlayer.STATE_PAUSED)) {
                                                     AppStore.loading = true;
                                                     setTimeout(() => {
-                                                        this.props.navigation.navigate("StationInfo", { name: "NTS 2" });
+                                                        this.props.navigation.navigate("StationInfo", { name: "NTS 1" });
                                                     }, 100);
                                                 } else {
                                                     setTimeout(() => {
@@ -299,7 +299,7 @@ class StationList extends Component {
                                     && PlaybackStore.structure.id === station.name && (PlaybackStore.playbackState !== TrackPlayer.STATE_NONE && PlaybackStore.playbackState !== TrackPlayer.STATE_PAUSED)
                                     ? <Icon name="stop" type="MaterialCommunityIcons" style={styles.stationsListItemLogoStopIcon} />
                                     : null}
-                                <Image source={{ uri: station.image }} style={[styles.stationsListItemLogoImage, styles.whiteBorder]} />
+                                <Image source={station.image} style={[styles.stationsListItemLogoImage, styles.whiteBorder]} />
                             </TouchableOpacity>
                             {!StationStore.shows[station.name].loading
                                 ?

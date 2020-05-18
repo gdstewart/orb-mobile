@@ -1,5 +1,6 @@
 import { Container, StyleProvider } from "native-base";
 import React, { Component } from "react";
+import { StatusBar } from "react-native";
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator, TransitionPresets } from "react-navigation-stack";
 import { scale } from "react-native-size-matters";
@@ -45,6 +46,9 @@ class StationsView extends Component {
 		return (
 			<StyleProvider style={getTheme()}>
 				<Container>
+					<StatusBar
+						barStyle="light-content"
+					/>
 					<AwesomeAlert
 						ref={ref => this.alertRef = ref}
 						styles={{
