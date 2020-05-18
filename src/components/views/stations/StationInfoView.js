@@ -28,7 +28,8 @@ export default class StationInfoView extends Component {
             headerTintColor: "#FFF",
             headerTitleStyle: {
                 fontWeight: "bold",
-                fontFamily: "Authentic_Sans"
+                fontFamily: "Authentic_Sans",
+                fontSize: scale(19)
             },
             headerLeft: () =>
                 <TouchableOpacity
