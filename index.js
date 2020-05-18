@@ -6,4 +6,6 @@ import "mobx-react-lite/batchingForReactNative";
 
 AppRegistry.registerComponent(appName, () => App);
 TrackPlayer.registerPlaybackService(() => require("./service"));
-YellowBox.ignoreWarnings(["ListView is deprecated"]);
+YellowBox.ignoreWarnings(["AsyncStorage has been extracted from react-native core"]);
+YellowBox.ignoreWarnings(["`scaleX` supplied"]);
+YellowBox.ignoreWarnings(["`scaleY` supplied"]);

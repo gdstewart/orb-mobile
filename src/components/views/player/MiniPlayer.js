@@ -135,7 +135,7 @@ class MiniPlayer extends Component {
 								}, 100);
 							}}>
 							<View style={{ flex: 0.2 }}>
-								<Image source={{ uri: PlaybackStore.structure.artwork }} style={[styles.miniPlayerImage, styles.whiteBorder]} />
+								<Image source={PlaybackStore.structure.artwork} style={[styles.miniPlayerImage, styles.whiteBorder]} />
 							</View>
 							<View style={{ flex: 0.6 }}>
 								<TextTicker

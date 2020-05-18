@@ -51,7 +51,7 @@ class StationList extends Component {
                         TrackPlayer.destroy();
                         AppStore.mediaPlayerClosed = false;
                         await TrackPlayer.setupPlayer();
-                        await TrackPlayer.updateOptions({
+                        TrackPlayer.updateOptions({
                             stopWithApp: false,
                             capabilities: [
                                 TrackPlayer.CAPABILITY_PLAY,

@@ -279,7 +279,7 @@ class StationInfo extends Component {
                                 }
                             }}*/>
                             {/*!StationStore.shows["NTS 1"].loading && !StationStore.shows["NTS 2"].loading && StationStore.shows["NTS 1"].currentShow !== "Offline" && StationStore.shows["NTS 2"].currentShow !== "Offline" ? ((PlaybackStore.playbackInfo.station === "NTS 1" || PlaybackStore.playbackInfo.station === "NTS 2") && PlaybackStore.playing ? <FaStop className="station-info-logo-stop-icon" /> : <FaPlay className={"station-info-logo-play-icon" + this.state.logoHoverState} />) : null*/}
-                            <Image source={{ uri: this.props.station.image }} style={[styles.stationInfoLogoImage, styles.whiteBorder]} />
+                            <Image source={this.props.station.image} style={[styles.stationInfoLogoImage, styles.whiteBorder]} />
                         </View>
                         <Text style={[styles.stationInfoShowTitle, styles.bold]}>
                             {"Currently playing on NTS 1: "}
@@ -328,7 +328,7 @@ class StationInfo extends Component {
                                 }
                             }}*/>
                             {/*StationStore.shows[this.props.name].currentShow !== "Offline" ? (PlaybackStore.playbackInfo.station === this.props.name && PlaybackStore.playing ? <FaStop className="station-info-logo-stop-icon" /> : <FaPlay className={"station-info-logo-play-icon" + this.state.logoHoverState} />) : null*/}
-                            <Image source={{ uri: this.props.station.image }} style={[styles.stationInfoLogoImage, styles.whiteBorder]} />
+                            <Image source={this.props.station.image} style={[styles.stationInfoLogoImage, styles.whiteBorder]} />
                         </View>
                         <Text style={[styles.stationInfoShowTitle, styles.bold]}>
                             {"Currently playing: "}

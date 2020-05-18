@@ -156,6 +156,7 @@ export default [
         instagramUrl: "http://www.instagram.com/foundation.fm",
         facebookUrl: "http://www.facebook.com/foundationfmradio"
     },
+    /*
     {
         name: "20ft Radio",
         streamUrl: "https://c18.radioboss.fm:18146/stream",
@@ -166,6 +167,7 @@ export default [
         instagramUrl: "https://www.instagram.com/20ftradio/",
         facebookUrl: "https://www.facebook.com/20ftradio/"
     },
+    */
     /*{
         name: "Skylab Radio",
         streamUrl: "https://secure-stream.skylab-radio.com/live",

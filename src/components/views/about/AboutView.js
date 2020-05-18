@@ -4,12 +4,9 @@ import { StatusBar, TouchableOpacity, Linking, Image } from "react-native";
 import { Container, Content, View, Text, StyleProvider, Icon } from "native-base";
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
-import { CustomPicker } from "react-native-custom-picker";
 import AwesomeAlert from "react-native-awesome-alert";
-import { ScaledSheet, verticalScale, scale } from "react-native-size-matters";
+import { scale } from "react-native-size-matters";
 import getTheme from "../../../theme/components";
-import StationStore from "../../../stores/Station";
-import AppStore from "../../../stores/App";
 import AppData from "../../../../res/data/app-data";
 import styles from "../../../theme/styles";
 
