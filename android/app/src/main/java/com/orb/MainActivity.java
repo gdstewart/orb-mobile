@@ -1,4 +1,4 @@
-package com.orb;
+package com.orbmobile;
 
 import com.facebook.react.ReactActivity;
 
